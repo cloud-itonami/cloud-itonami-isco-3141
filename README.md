@@ -62,17 +62,17 @@ human-in-the-loop interrupt/resume via checkpointing.
                                            +-> :hold               (:hard? true)
 ```
 
-- `src/field_lab_science_support/store.cljc` — `Store` protocol +
+- `src/field_lab_science_support/store.kotoba` — `Store` protocol +
   `MemStore`: registered projects, committed records, an append-only
   audit ledger.
-- `src/field_lab_science_support/advisor.cljc` — `Advisor` protocol;
+- `src/field_lab_science_support/advisor.kotoba` — `Advisor` protocol;
   `mock-advisor` (deterministic, default) proposes a sampling
   operation from a request; `llm-advisor` wraps a
   `langchain.model/ChatModel` — either way the advisor only ever
   produces a `:propose`-effect proposal, never a committed record, and
   LLM parse failures always yield `confidence 0.0` (forces escalation,
   never fabricated confidence).
-- `src/field_lab_science_support/governor.cljc` —
+- `src/field_lab_science_support/governor.kotoba` —
   `FieldLabGovernor/check`: a pure function, wired as its own
   `:govern` node. Hard invariants (unregistered project, a proposal
   whose `:effect` isn't `:propose`) always route to `:hold`. Escalation
@@ -83,7 +83,7 @@ human-in-the-loop interrupt/resume via checkpointing.
   (`actor/approve!`), matching the README's robotics-premise statement
   that operating near research subjects, protected sites or water
   sources always require human sign-off.
-- `src/field_lab_science_support/actor.cljc` — `build-graph`,
+- `src/field_lab_science_support/actor.kotoba` — `build-graph`,
   `run-request!`, `approve!`: the `langgraph.graph/state-graph` wiring
   itself.
 
