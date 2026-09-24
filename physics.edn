@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a field-sampling robot performs soil/water/crop
+;; sample collection and basic on-site analysis for life science technicians
+;; (ISCO 3141). Its physical work is hauling filled sample containers across
+;; a field, and keeping samples cold in an insulated cooler box in the sun.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-3141"
+ :cases
+ [{:id :sample-haul-across-field
+   :kind :transport
+   :procedure "field robot hauls soil and water sample containers 100 m across a tilled field to the vehicle"
+   :params {:mass-kg 50.0 :distance-m 100.0 :v-max-mps 0.8 :a-max-mps2 0.5
+            :brake-decel-mps2 0.8 :drive-force-n 200.0 :crr 0.10
+            :cog-height-m 0.45 :support-half-length-m 0.35}
+   :sweep {:param :payload-kg :values [10.0 30.0 60.0 90.0 120.0]}
+   :quantity :cycle-time-s
+   :limit {:max 140.0 :basis "estimate: one field-to-vehicle leg short enough that water samples reach the cooler within their holding plan"}
+   :boundary {:lo 1.0 :hi 150.0}}
+  {:id :sample-cooler-wall
+   :kind :thermal
+   :procedure "EPS cooler box in 35 C sun with 4 C ice packs inside; the inner wall temperature after two hours depends on wall thickness"
+   :params {:conductivity-w-mk 0.035 :density-kg-m3 20.0 :specific-heat-j-kgk 1300.0
+            :t0-c 4.0 :t-hot-c 35.0 :h-front-w-m2k 15.0 :t-back-ambient-c 4.0 :h-back-w-m2k 5.0
+            :threshold-c 8.0 :duration-s 7200.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.010 0.025 0.040 0.050 0.075]}
+   :quantity :final-back-c
+   :limit {:max 8.0 :basis "estimate: inner wall at or below 8 C, the upper end of the 2-8 C band commonly used for chilled samples"}
+   :boundary {:lo 0.005 :hi 0.15}}]}
